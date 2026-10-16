@@ -1,0 +1,55 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Design Your Cake</title><meta name="description" content="Cake baker's Ahmedabad — handcrafted celebration, wedding & eggless designer cakes. Order online, design your own cake, book a tasting.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://images.unsplash.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script defer src="app.js"></script>
+</head><body>
+<header class="phead"><div class="wrap">
+  <p class="eyebrow rv">Cake studio</p>
+  <h1 class="split-lines" style="margin-top:18px">Design it.<br><em>We'll bake it.</em></h1>
+  <p class="rv">Pick your size, tiers, flavour and finish — watch your cake build itself with a live estimate. Send it to us in one tap.</p>
+</div></header>
+<section style="padding-top:0"><div class="wrap builder">
+  <form class="panel" id="builder" onsubmit="return false">
+    <div class="field"><label for="kg">Size · <span id="kgOut">1 kg</span></label><input type="range" id="kg" name="kg" min="0.5" max="6" step="0.5" value="1" style="padding:0;accent-color:var(--rose)"></div>
+    <div class="field"><label>Tiers</label><div class="opts">
+      <input type="radio" name="tiers" id="t1" value="1" checked><label for="t1">Single</label>
+      <input type="radio" name="tiers" id="t2" value="2"><label for="t2">Two tier</label>
+      <input type="radio" name="tiers" id="t3" value="3"><label for="t3">Three tier</label></div></div>
+    <div class="field"><label>Flavour</label><div class="opts">
+      <input type="radio" name="flav" id="f1" value="Belgian Chocolate" checked><label for="f1">Belgian Chocolate</label>
+      <input type="radio" name="flav" id="f2" value="Vanilla Bean"><label for="f2">Vanilla Bean</label>
+      <input type="radio" name="flav" id="f3" value="Red Velvet"><label for="f3">Red Velvet +₹100</label>
+      <input type="radio" name="flav" id="f4" value="Rose Pistachio"><label for="f4">Rose Pistachio +₹200</label>
+      <input type="radio" name="flav" id="f5" value="Rasmalai"><label for="f5">Rasmalai +₹200</label>
+      <input type="radio" name="flav" id="f6" value="Biscoff"><label for="f6">Biscoff +₹150</label></div></div>
+    <div class="field"><label>Finish</label><div class="opts">
+      <input type="radio" name="fin" id="n1" value="Buttercream" checked><label for="n1">Buttercream</label>
+      <input type="radio" name="fin" id="n2" value="Fondant"><label for="n2">Fondant</label>
+      <input type="radio" name="fin" id="n3" value="Ganache drip"><label for="n3">Ganache drip</label>
+      <input type="radio" name="fin" id="n4" value="Floral blush"><label for="n4">Floral blush</label></div></div>
+    <div class="field"><label>Extras (+₹250 each)</label><div class="opts">
+      <input type="checkbox" name="x" id="x1" value="Gold leaf"><label for="x1">Gold leaf</label>
+      <input type="checkbox" name="x" id="x2" value="Fresh berries"><label for="x2">Fresh berries</label>
+      <input type="checkbox" name="x" id="x3" value="Topper"><label for="x3">Custom topper</label>
+      <input type="checkbox" name="x" id="x4" value="Photo print"><label for="x4">Photo print</label></div></div>
+    <div class="field"><label>Egg preference</label><div class="opts">
+      <input type="radio" name="egg" id="e1" value="Eggless" checked><label for="e1">Eggless</label>
+      <input type="radio" name="egg" id="e2" value="With egg"><label for="e2">With egg</label>
+      <input type="radio" name="egg" id="e3" value="Jain-friendly eggless"><label for="e3">Jain-friendly</label></div></div>
+    <div class="field"><label for="msg">Message on cake / topper</label><input id="msg" name="msg" maxlength="30" placeholder="Happy 25th, Aarav"></div>
+    <div class="field"><label for="date">Celebration date</label><input type="date" id="date" name="date"></div>
+  </form>
+  <aside class="preview">
+    <p class="eyebrow">Live preview</p>
+    <svg viewBox="0 0 400 400" id="cakeSvg" role="img" aria-label="Preview of your cake"></svg>
+    <p style="color:var(--muted)" id="serves"></p>
+    <div class="total" id="total">₹0</div><small style="color:var(--muted)">estimate · final quote on WhatsApp</small>
+    <div style="margin-top:22px"><a class="btn" id="sendDesign" target="_blank" rel="noopener">Send my design →</a></div>
+  </aside>
+</div></section>
+</body></html>
