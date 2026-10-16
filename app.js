@@ -88,7 +88,34 @@ function cardHTML(m) {
   <div class="meta"><div><small><i class="veg"></i>Eggless available</small><h3 style="font-size:1.45rem">${m.name}</h3><small>${m.note}</small><div class="price">${inr(m.price)}<small style="display:inline">${m.unit}</small></div></div>
   <button class="add" data-id="${m.id}" aria-label="Add ${m.name}">+</button></div></article>`;
 }
-document.addEventListener('click', e => { const b = e.target.closest('.add'); if (b) addToBag(MENU.find(m => m.id === b.dataset.id)); });
+document.addEventListener('click', e => {
+  const b = e.target.closest('.add'); if (b) return addToBag(MENU.find(m => m.id === b.dataset.id));
+  const ph = e.target.closest('.card .ph'); if (ph) quickView(MENU.find(m => m.id === $('.add', ph.parentElement).dataset.id));
+});
+// v3 — quick view with size + egg choice
+document.body.insertAdjacentHTML('beforeend', '<dialog class="qv" id="qv"></dialog>');
+function quickView(m) {
+  const qv = $('#qv'), perKg = m.unit.includes('kg'), sizes = perKg ? [0.5, 1, 1.5, 2, 3] : [1, 2, 3];
+  qv.innerHTML = `<div class="g"><img src="${U(m.img, 1000)}" alt="${m.name}"><div class="bd"><button class="x" style="position:absolute;right:20px;top:14px" aria-label="Close">×</button>
+  <p class="eyebrow">${m.cat}</p><h2 style="font-size:2.6rem;margin:10px 0">${m.name}</h2><p style="color:var(--muted)">${m.note}</p>
+  <div class="field" style="margin-top:22px"><label>${perKg ? 'Weight' : 'Quantity'}</label><div class="opts">${sizes.map((s, i) => `<input type="radio" name="qs" id="qs${i}" value="${s}" ${i === (perKg ? 1 : 0) ? 'checked' : ''}><label for="qs${i}">${perKg ? s + ' kg' : '× ' + s}</label>`).join('')}</div></div>
+  <div class="field"><label>Preference</label><div class="opts"><input type="radio" name="qe" id="qe0" value="Eggless" checked><label for="qe0">Eggless</label><input type="radio" name="qe" id="qe1" value="With egg"><label for="qe1">With egg</label><input type="radio" name="qe" id="qe2" value="Jain"><label for="qe2">Jain-friendly</label></div></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:10px"><b class="total" id="qvP"></b><button class="btn" id="qvAdd">Add to order</button></div>
+  <p style="margin-top:14px;font-size:.82rem;color:var(--muted)">${perKg ? 'Serves ~8 per kg · ' : ''}Order 24 hrs ahead · 50% advance via UPI</p></div></div>`;
+  const val = () => +$('input[name=qs]:checked', qv).value, egg = () => $('input[name=qe]:checked', qv).value;
+  const upd = () => $('#qvP').textContent = inr(Math.round(m.price * val()));
+  qv.oninput = upd; upd();
+  $('.x', qv).onclick = () => qv.close();
+  qv.onclick = e => { if (e.target === qv) qv.close(); };
+  $('#qvAdd').onclick = () => { const v = val(); addToBag({ id: `${m.id}-${v}-${egg()}`, name: `${m.name} · ${perKg ? v + ' kg' : '×' + v} · ${egg()}`, price: Math.round(m.price * v), unit: '' }); qv.close(); };
+  qv.showModal();
+}
+// v3 — flavour explorer
+const fl = $('#flavList');
+if (fl) {
+  const pick = i => { $$('button', fl).forEach((b, k) => b.classList.toggle('on', k === i)); const imgs = $$('#flavStage img'); imgs.forEach((im, k) => im.classList.toggle('on', k === i)); $('#flavN').textContent = imgs[i].dataset.n; $('#flavP').textContent = imgs[i].dataset.p; };
+  $$('button', fl).forEach((b, i) => { b.onmouseenter = b.onclick = () => pick(i); });
+}
 
 /* ---------- page features ---------- */
 const hrow = $('#hrow'); if (hrow) hrow.insertAdjacentHTML('beforeend', MENU.filter(m => m.tag).map(cardHTML).join(''));
@@ -218,8 +245,24 @@ function motion() {
   $$('.clip-rv').forEach(el => gsap.to(el, { clipPath: 'inset(0% 0 0 0)', duration: 1.4, ease: 'expo.inOut', scrollTrigger: { trigger: el, start: 'top 85%' } }));
   // section colour shift
   $$('[data-bg]').forEach(sec => ScrollTrigger.create({ trigger: sec, start: 'top 55%', end: 'bottom 45%', onToggle: e => document.body.style.backgroundColor = e.isActive ? sec.dataset.bg : '' }));
+  // v3 — expanding full-bleed image
+  if ($('.expand')) gsap.timeline({ scrollTrigger: { trigger: '.expand', start: 'top top', end: '+=120%', pin: true, scrub: 1, refreshPriority: 1 } })
+    .to('.ex-img', { clipPath: 'inset(0% 0% round 0px)', ease: 'none' })
+    .to('.ex-img img', { scale: 1, ease: 'none' }, 0)
+    .to('.ex-txt h2', { opacity: 1, y: -20, ease: 'none' }, .5);
+  // v3 — marquee skews with scroll velocity
+  const mq = $('.marquee .track');
+  if (mq) { const sk = gsap.quickTo(mq, 'skewX', { duration: .5, ease: 'power3' }); ScrollTrigger.create({ onUpdate: s => sk(gsap.utils.clamp(-12, 12, s.getVelocity() / -250)) }); }
+  // v3 — 3D tilt on cards
+  if (matchMedia('(hover:hover)').matches) document.addEventListener('pointermove', e => {
+    const c = e.target.closest('.card');
+    $$('.card.tilt').forEach(k => { if (k !== c) { k.classList.remove('tilt'); k.style.transform = ''; } });
+    if (!c) return; const r = c.getBoundingClientRect(); c.classList.add('tilt');
+    c.style.transform = `perspective(900px) rotateY(${((e.clientX - r.left) / r.width - .5) * 10}deg) rotateX(${((e.clientY - r.top) / r.height - .5) * -10}deg)`;
+  });
   // scroll progress
   gsap.to('#prog', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: true } });
+  ScrollTrigger.sort(); ScrollTrigger.refresh();
   addEventListener('load', () => ScrollTrigger.refresh());
 }
 
