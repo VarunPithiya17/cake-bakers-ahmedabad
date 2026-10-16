@@ -191,3 +191,31 @@ details p{color:var(--muted);margin-top:12px;max-width:720px}
 .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,120px);background:var(--cocoa);color:var(--cream);padding:14px 24px;border-radius:999px;z-index:90;transition:transform .5s;font-weight:700;font-size:.9rem}
 .toast.show{transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== v2: award-reference upgrades ===== */
+/* manifesto: Theobroma-style statement w/ inline photo pills, words fill on scroll */
+.manifesto .fill{font-family:var(--serif);font-size:clamp(2.2rem,5.6vw,5.4rem);line-height:1.08;letter-spacing:-.01em}
+.manifesto .w{opacity:.14;transition:opacity .2s}
+.pill{display:inline-block;width:1.7em;height:.85em;border-radius:999px;overflow:hidden;vertical-align:-.08em;margin:0 .12em}
+.pill img{width:100%;height:100%;object-fit:cover}
+/* stacked sticky occasion cards */
+.stack{display:grid;gap:0}
+.occ{position:sticky;top:110px;min-height:62vh;border-radius:32px;padding:clamp(26px,4vw,56px);display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;margin-bottom:6vh;color:var(--cocoa);box-shadow:0 -20px 60px -30px rgba(42,23,18,.35);transform-origin:top center}
+.occ:nth-child(1){background:#f1d9d0}.occ:nth-child(2){background:#e8dcc4}.occ:nth-child(3){background:#d9e4d4}.occ:nth-child(4){background:#2a1712;color:var(--cream)}
+.occ .ph{border-radius:22px;overflow:hidden;aspect-ratio:5/4}
+.occ .ph img{width:100%;height:100%;object-fit:cover}
+.occ .num{font-family:var(--serif);font-style:italic;font-size:1.2rem;opacity:.6}
+@media(max-width:760px){.occ{grid-template-columns:1fr;top:80px}}
+/* sticker (Theobroma tilted card) */
+.sticker{position:absolute;right:-10px;bottom:-30px;background:var(--cocoa);color:var(--cream);padding:18px 20px;border-radius:16px;width:190px;transform:rotate(6deg);font-size:.85rem;line-height:1.35;z-index:4;box-shadow:0 20px 40px -15px rgba(0,0,0,.4)}
+.sticker b{font-family:var(--serif);font-size:1.4rem;display:block;margin-bottom:4px;color:var(--rose)}
+/* clip reveal */
+.js .clip-rv{clip-path:inset(100% 0 0 0)}
+/* image trail */
+.trail-zone{position:relative}
+.trail-img{position:absolute;width:150px;aspect-ratio:3/4;object-fit:cover;border-radius:14px;pointer-events:none;z-index:-1;transform:translate(-50%,-50%)}
+/* page transition curtain */
+#curtain{position:fixed;inset:0;background:var(--rose);z-index:120;transform:translateY(100%);pointer-events:none;display:grid;place-items:center;color:var(--cream);font-family:var(--serif);font-style:italic;font-size:clamp(2rem,6vw,4rem)}
+/* scroll progress */
+#prog{position:fixed;top:0;left:0;height:3px;background:var(--rose);z-index:60;width:100%;transform-origin:left;transform:scaleX(0)}
+body{transition:background-color .7s}

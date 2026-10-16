@@ -205,6 +205,21 @@ function motion() {
   $$('.count').forEach(c => { const o = { v: 0 }; gsap.to(o, { v: +c.dataset.to, duration: 2, ease: 'power2.out', scrollTrigger: { trigger: c, start: 'top 90%' }, onUpdate: () => c.textContent = Math.round(o.v).toLocaleString('en-IN') + (c.dataset.s || '') }); });
   // magnetic buttons
   $$('.btn').forEach(b => { b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); gsap.to(b, { x: (e.clientX - r.left - r.width / 2) * .25, y: (e.clientY - r.top - r.height / 2) * .35, duration: .4 }); }); b.addEventListener('pointerleave', () => gsap.to(b, { x: 0, y: 0, duration: .6, ease: 'elastic.out(1,.4)' })); });
+
+  // v2 — manifesto words fill on scroll (Theobroma-style statement)
+  $$('.fill').forEach(p => {
+    [...p.childNodes].forEach(n => { if (n.nodeType === 3) { const f = document.createDocumentFragment(); n.textContent.split(/(\s+)/).forEach(w => { if (!w.trim()) return f.append(w); const s = document.createElement('span'); s.className = 'w'; s.textContent = w; f.append(s); }); n.replaceWith(f); } else n.classList.add('w'); });
+    gsap.to($$('.w', p), { opacity: 1, stagger: .1, ease: 'none', scrollTrigger: { trigger: p, start: 'top 80%', end: 'bottom 45%', scrub: true } });
+  });
+  // stacked occasion cards shrink as the next one slides over
+  const occ = $$('.occ');
+  occ.forEach((c, i) => { if (occ[i + 1]) gsap.to(c, { scale: .92, opacity: .55, ease: 'none', scrollTrigger: { trigger: occ[i + 1], start: 'top bottom', end: 'top 110px', scrub: true } }); });
+  // clip-path image reveal
+  $$('.clip-rv').forEach(el => gsap.to(el, { clipPath: 'inset(0% 0 0 0)', duration: 1.4, ease: 'expo.inOut', scrollTrigger: { trigger: el, start: 'top 85%' } }));
+  // section colour shift
+  $$('[data-bg]').forEach(sec => ScrollTrigger.create({ trigger: sec, start: 'top 55%', end: 'bottom 45%', onToggle: e => document.body.style.backgroundColor = e.isActive ? sec.dataset.bg : '' }));
+  // scroll progress
+  gsap.to('#prog', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: true } });
   addEventListener('load', () => ScrollTrigger.refresh());
 }
 
@@ -216,3 +231,28 @@ if (ld && !seen) {
   const t = setInterval(() => { n = Math.min(100, n + 4); num.textContent = n; if (n === 100) { clearInterval(t); ld.classList.add('done'); motion(); } }, 28);
 } else { ld?.remove(); motion(); }
 setTimeout(() => $$('.rv').forEach(e => { if (!window.gsap) { e.style.opacity = 1; e.style.transform = 'none'; } }), 1500);
+
+// v2 — image trail on CTA (desktop pointer only)
+const tz = $('.trail-zone');
+if (tz && matchMedia('(hover:hover)').matches) {
+  const T = ['photo-1606983340126-99ab4feaa64a', 'photo-1599785209707-a456fc1337bb', 'photo-1622622008494-60c9e6b41996', 'photo-1558301211-0d8c8ddee6ec', 'photo-1533134242443-d4fd215305ad', 'photo-1761296152332-88ada22be48a'].map(i => U(i, 300));
+  T.forEach(src => new Image().src = src);
+  let k = 0, lx = 0, ly = 0;
+  tz.addEventListener('pointermove', e => {
+    const r = tz.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    if (Math.hypot(x - lx, y - ly) < 90 || !window.gsap) return; lx = x; ly = y;
+    const im = document.createElement('img'); im.className = 'trail-img'; im.src = T[k++ % T.length]; im.alt = ''; im.style.left = x + 'px'; im.style.top = y + 'px'; tz.append(im);
+    gsap.fromTo(im, { scale: .4, rotate: (k % 2 ? -8 : 8) }, { scale: 1, duration: .5, ease: 'back.out(2)' });
+    gsap.to(im, { opacity: 0, scale: .7, y: 40, delay: .7, duration: .6, onComplete: () => im.remove() });
+  });
+}
+// v2 — page transition curtain + scroll progress bar
+document.body.insertAdjacentHTML('beforeend', '<div id="curtain">Cake baker\'s</div><div id="prog"></div>');
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href$=".html"],a[href*=".html?"]');
+  if (!a || a.target || e.metaKey || e.ctrlKey || !window.gsap) return;
+  e.preventDefault();
+  gsap.to('#curtain', { y: 0, duration: .55, ease: 'expo.in', onComplete: () => location.href = a.href });
+});
+if (window.gsap) gsap.fromTo('#curtain', { y: 0 }, { y: '-100%', duration: .8, ease: 'expo.out', delay: .05 });
+addEventListener('pageshow', e => { if (e.persisted && window.gsap) gsap.set('#curtain', { y: '100%' }); });
